@@ -20,7 +20,9 @@ Then, run the etl.py file
 This will properly pick up the files on the data/log_data and data/song_data folders to parse and insert into the db.
 
 ## Dependencies
-Please see the requirements.txt file.
+Below are the python modules needed to be installed before running the project:
+pandas
+psycopg2
 
 ## Dimesional model
 The model is a start schema, with one fact table (songplays) containing other four dimensional tables (time, artists, songs, users)
