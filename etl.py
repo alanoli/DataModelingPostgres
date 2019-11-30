@@ -19,7 +19,7 @@ def process_song_file(cur, filepath):
     try:
         cur.execute(artist_table_insert, artist_data)
     except psycopg2.Error as e:
-        print(e)
+        print("Not possible to insert into artists. " + str(e))
     
     # insert song record
     song_data = []
@@ -28,12 +28,14 @@ def process_song_file(cur, filepath):
     song_data.append(df['artist_id'])
     song_data.append(df['year'])
     song_data.append(df['duration'])
-    cur.execute(song_table_insert, song_data)
-
+    try:
+        cur.execute(song_table_insert, song_data)
+    except psycopg2.Error as e:
+        print("Not possible to insert into songs. " + str(e))
 
 def process_log_file(cur, filepath):
     # open log file
-    df = pd.read_json(filepath, lines=True)
+    df = pd.read_json(filepath, lines=True, encoding='raw_unicode_escape')
 
     # filter by NextSong action
     df = df[df['page'] == 'NextSong']
@@ -57,7 +59,10 @@ def process_log_file(cur, filepath):
     time_df = pd.DataFrame.from_dict(ts_dict)
 
     for i, row in time_df.iterrows():
-        cur.execute(time_table_insert, list(row))
+        try:
+            cur.execute(time_table_insert, list(row))
+        except Exception as e:
+            print("Not possible to insert into time. " + str(e))
 
     # load user table
     user_df = df[['userId', 'firstName', 'lastName', 'gender', 'level']]
@@ -70,8 +75,12 @@ def process_log_file(cur, filepath):
     for index, row in df.iterrows():
         
         # get songid and artistid from song and artist tables
-        cur.execute(song_select, (row.song, row.artist))
-        results = cur.fetchone()
+        # print(row.song)
+        try:
+            cur.execute(song_select, (row.song, row.artist, row.length))
+            results = cur.fetchone()
+        except Exception as e:
+            print(e)
         
         if results:
             songid, artistid = results
@@ -80,7 +89,10 @@ def process_log_file(cur, filepath):
 
         # insert songplay record
         songplay_data = (str(row.ts), row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent.replace('\"', ''))
-        cur.execute(songplay_table_insert, songplay_data)
+        try:
+            cur.execute(songplay_table_insert, songplay_data)
+        except Exception as e:
+            print(e)
 
 
 def process_data(cur, conn, filepath, func):
@@ -88,7 +100,7 @@ def process_data(cur, conn, filepath, func):
     all_files = []
     for root, dirs, files in os.walk(filepath):
         files = glob.glob(os.path.join(root,'*.json'))
-        for f in files :
+        for f in files:
             all_files.append(os.path.abspath(f))
 
     # get total number of files found
@@ -103,7 +115,7 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
-    conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
+    conn = psycopg2.connect("host=localhost dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
     process_data(cur, conn, filepath='data/song_data', func=process_song_file)
