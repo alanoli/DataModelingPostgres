@@ -18,6 +18,7 @@ Then, run the etl.py file
     python3 etl.py
 
 This will properly pick up the files on the data/log_data and data/song_data folders to parse and insert into the db.
+A more detailed explanation of each operation about the ETL can be found on the notebook etl.ipynb
 
 ## Dependencies
 Below are the python modules needed to be installed before running the project:
