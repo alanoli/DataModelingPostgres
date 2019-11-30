@@ -21,7 +21,9 @@ This will properly pick up the files on the data/log_data and data/song_data fol
 
 ## Dependencies
 Below are the python modules needed to be installed before running the project:
+
 pandas
+
 psycopg2
 
 ## Dimesional model
