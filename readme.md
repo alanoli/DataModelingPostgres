@@ -26,5 +26,5 @@ Below are the python modules needed to be installed before running the project:
     pandas
     psycopg2
 
-## Dimesional model
+## Dimensional model
 The model is a start schema, with one fact table (songplays) containing other four dimensional tables (time, artists, songs, users)
