@@ -84,7 +84,7 @@ INSERT INTO songplays
     ,user_agent_id
 )
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-ON CONFLICT (songplay_id) DO NOTHING;
+ON CONFLICT (songplay_id) DO UPDATE SET level=EXCLUDED.level;
 """)
 
 user_table_insert = ("""
